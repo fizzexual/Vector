@@ -36,7 +36,7 @@ SET_CEF_TARGET_OUT_DIR()
 add_executable(${VECTOR_TARGET} WIN32 ${VECTOR_SRCS})
 SET_EXECUTABLE_TARGET_PROPERTIES(${VECTOR_TARGET})
 add_dependencies(${VECTOR_TARGET} libcef_dll_wrapper)
-target_link_libraries(${VECTOR_TARGET} libcef_lib libcef_dll_wrapper ${CEF_STANDARD_LIBS})
+target_link_libraries(${VECTOR_TARGET} libcef_lib libcef_dll_wrapper ${CEF_STANDARD_LIBS} shell32 comdlg32 ole32)
 
 # Our own headers (so "core/...", "app/...", "bridge/...", "third_party/..." resolve).
 target_include_directories(${VECTOR_TARGET} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")

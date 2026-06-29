@@ -102,3 +102,33 @@ void VectorApp::OnContextInitialized() {
 CefRefPtr<CefClient> VectorApp::GetDefaultClient() {
   return VectorClient::GetInstance();
 }
+
+// ---- Render process: JS<->native message router ----
+
+void VectorApp::OnWebKitInitialized() {
+  CefMessageRouterConfig config;  // defaults: window.cefQuery / cefQueryCancel
+  render_router_ = CefMessageRouterRendererSide::Create(config);
+}
+
+void VectorApp::OnContextCreated(CefRefPtr<CefBrowser> browser,
+                                 CefRefPtr<CefFrame> frame,
+                                 CefRefPtr<CefV8Context> context) {
+  if (render_router_) render_router_->OnContextCreated(browser, frame, context);
+}
+
+void VectorApp::OnContextReleased(CefRefPtr<CefBrowser> browser,
+                                  CefRefPtr<CefFrame> frame,
+                                  CefRefPtr<CefV8Context> context) {
+  if (render_router_) render_router_->OnContextReleased(browser, frame, context);
+}
+
+bool VectorApp::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+                                         CefRefPtr<CefFrame> frame,
+                                         CefProcessId source_process,
+                                         CefRefPtr<CefProcessMessage> message) {
+  if (render_router_) {
+    return render_router_->OnProcessMessageReceived(browser, frame,
+                                                    source_process, message);
+  }
+  return false;
+}
