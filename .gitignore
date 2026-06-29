@@ -1,0 +1,9 @@
+# Build output
+/build/
+/dist/
+*.user
+*.obj
+*.pdb
+
+# Third-party CEF SDK (large prebuilt binaries — fetched, not committed)
+/third_party/cef/

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vector</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="titlebar">
+    <div class="brand">
+      <span class="brand-mark">▲</span>
+      <span class="brand-name">Vector</span>
+    </div>
+    <div class="win-controls">
+      <button class="win-btn" data-win="minimize" title="Minimize" aria-label="Minimize">&#xE921;</button>
+      <button class="win-btn" data-win="maximize" title="Maximize" aria-label="Maximize">&#xE922;</button>
+      <button class="win-btn win-close" data-win="close" title="Close" aria-label="Close">&#xE8BB;</button>
+    </div>
+  </div>
+
+  <div class="app-body">
+    <aside class="sidebar">
+      <nav class="nav">
+        <button class="nav-item active" data-view="all"><span class="ic">▦</span> Library</button>
+        <button class="nav-item" data-view="recent"><span class="ic">◷</span> Recent</button>
+        <button class="nav-item" data-view="favorites"><span class="ic">♥</span> Favorites</button>
+        <button class="nav-item" data-view="installed"><span class="ic">▼</span> Installed</button>
+      </nav>
+
+      <div class="nav-group-label">Platforms</div>
+      <nav class="nav">
+        <button class="nav-item plat active" data-source="all"><span class="dot dot-all"></span> All stores <span class="count" data-count="all">0</span></button>
+        <button class="nav-item plat" data-source="steam"><span class="dot dot-steam"></span> Steam <span class="count" data-count="steam">0</span></button>
+        <button class="nav-item plat" data-source="epic"><span class="dot dot-epic"></span> Epic <span class="count" data-count="epic">0</span></button>
+        <button class="nav-item plat" data-source="gog"><span class="dot dot-gog"></span> GOG <span class="count" data-count="gog">0</span></button>
+        <button class="nav-item plat" data-source="manual"><span class="dot dot-manual"></span> Manual <span class="count" data-count="manual">0</span></button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="nav-item" id="btn-add"><span class="ic">＋</span> Add a game</button>
+        <button class="nav-item" id="btn-settings"><span class="ic">⚙</span> Settings</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <label class="search">
+          <span class="search-ic">⌕</span>
+          <input id="search" type="text" placeholder="Search your library" autocomplete="off" spellcheck="false" />
+        </label>
+        <div class="sort">
+          <select id="sort" aria-label="Sort">
+            <option value="recent">Recently played</option>
+            <option value="name">Name (A–Z)</option>
+            <option value="size">Size on disk</option>
+          </select>
+        </div>
+        <button id="btn-rescan" class="btn-rescan"><span class="ic">⟳</span> Rescan</button>
+      </div>
+
+      <div class="content">
+        <div class="content-head">
+          <h1 id="view-title">All games</h1>
+          <span id="view-count" class="muted">0 games</span>
+        </div>
+        <div id="grid" class="grid"></div>
+        <div id="empty" class="empty hidden">
+          <div class="empty-mark">▲</div>
+          <h2 id="empty-title">No games yet</h2>
+          <p id="empty-body" class="muted">Press <strong>Rescan</strong> to detect installed games, or add one manually.</p>
+          <button class="btn-primary" id="empty-rescan">Rescan now</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Game detail -->
+  <div class="modal" id="detail">
+    <div class="modal-backdrop" data-close="detail"></div>
+    <div class="detail-card">
+      <button class="modal-x" data-close="detail" aria-label="Close">✕</button>
+      <div class="detail-hero" id="detail-hero"></div>
+      <div class="detail-info">
+        <div class="detail-badge" id="detail-badge"></div>
+        <h2 id="detail-name">Game</h2>
+        <div class="detail-meta" id="detail-meta"></div>
+        <div class="detail-actions">
+          <button class="btn-primary" id="detail-play"><span class="ic">▶</span> Play</button>
+          <button class="btn-ghost" id="detail-folder"><span class="ic">▤</span> Show files</button>
+          <button class="btn-ghost" id="detail-fav"><span class="ic">♥</span> Favorite</button>
+          <button class="btn-ghost" id="detail-hide"><span class="ic">⦸</span> Hide</button>
+        </div>
+        <div class="detail-path" id="detail-path"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add game -->
+  <div class="modal" id="addmodal">
+    <div class="modal-backdrop" data-close="addmodal"></div>
+    <div class="add-card">
+      <button class="modal-x" data-close="addmodal" aria-label="Close">✕</button>
+      <h2>Add a game</h2>
+      <p class="muted">Point Vector at any game's executable.</p>
+      <label class="field">
+        <span>Title</span>
+        <input id="add-name" type="text" placeholder="Game title" />
+      </label>
+      <label class="field">
+        <span>Executable</span>
+        <div class="field-row">
+          <input id="add-exe" type="text" placeholder="C:\\Games\\game.exe" readonly />
+          <button class="btn-ghost" id="add-browse-exe">Browse</button>
+        </div>
+      </label>
+      <label class="field">
+        <span>Cover image <em>(optional)</em></span>
+        <div class="field-row">
+          <input id="add-art" type="text" placeholder="Optional cover image" readonly />
+          <button class="btn-ghost" id="add-browse-art">Browse</button>
+        </div>
+      </label>
+      <div class="add-actions">
+        <button class="btn-ghost" data-close="addmodal">Cancel</button>
+        <button class="btn-primary" id="add-submit">Add game</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="bridge.js"></script>
+  <script src="mock-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
