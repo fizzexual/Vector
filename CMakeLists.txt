@@ -28,6 +28,9 @@ file(GLOB_RECURSE VECTOR_SRCS CONFIGURE_DEPENDS
   "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h")
 
+# Windows resource script (embeds the application icon into the .exe).
+list(APPEND VECTOR_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/win/vector.rc")
+
 # Logical target used to link the libcef library.
 ADD_LOGICAL_TARGET("libcef_lib" "${CEF_LIB_DEBUG}" "${CEF_LIB_RELEASE}")
 

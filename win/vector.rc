@@ -1,0 +1,2 @@
+// Vector application resources. The lowest-ID icon becomes the .exe icon.
+1 ICON "icon.ico"

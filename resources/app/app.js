@@ -328,6 +328,12 @@
     $$(".win-btn[data-win]").forEach(function (el) {
       el.addEventListener("click", function () { vector.windowCommand(el.getAttribute("data-win")).catch(function () {}); });
     });
+    var titlebar = document.querySelector(".titlebar");
+    if (titlebar) {
+      titlebar.addEventListener("dblclick", function (e) {
+        if (!e.target.closest(".win-btn")) vector.windowCommand("maximize").catch(function () {});
+      });
+    }
   }
 
   function guessName(path) {

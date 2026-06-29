@@ -89,3 +89,15 @@ void VectorClient::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
                                              const CefString& error_string) {
   router_->OnRenderProcessTerminated(browser);
 }
+
+void VectorClient::OnDraggableRegionsChanged(
+    CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
+    const std::vector<CefDraggableRegion>& regions) {
+  CEF_REQUIRE_UI_THREAD();
+  if (auto browser_view = CefBrowserView::GetForBrowser(browser)) {
+    if (auto window = browser_view->GetWindow()) {
+      window->SetDraggableRegions(regions);
+    }
+  }
+}

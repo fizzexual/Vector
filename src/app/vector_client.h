@@ -1,10 +1,12 @@
-// Browser-level client: window lifecycle, title, and the browser side of the
-// JS<->native message router (dispatched by VectorQueryHandler).
+// Browser-level client: window lifecycle, title, draggable regions, and the
+// browser side of the JS<->native message router.
 #pragma once
 #include <list>
 #include <memory>
+#include <vector>
 
 #include "include/cef_client.h"
+#include "include/cef_drag_handler.h"
 #include "include/wrapper/cef_message_router.h"
 
 class VectorQueryHandler;
@@ -12,7 +14,8 @@ class VectorQueryHandler;
 class VectorClient : public CefClient,
                      public CefLifeSpanHandler,
                      public CefDisplayHandler,
-                     public CefRequestHandler {
+                     public CefRequestHandler,
+                     public CefDragHandler {
  public:
   VectorClient();
   ~VectorClient() override;
@@ -23,6 +26,7 @@ class VectorClient : public CefClient,
   CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override { return this; }
   CefRefPtr<CefDisplayHandler> GetDisplayHandler() override { return this; }
   CefRefPtr<CefRequestHandler> GetRequestHandler() override { return this; }
+  CefRefPtr<CefDragHandler> GetDragHandler() override { return this; }
   bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
                                 CefRefPtr<CefFrame> frame,
                                 CefProcessId source_process,
@@ -47,6 +51,12 @@ class VectorClient : public CefClient,
                                  TerminationStatus status,
                                  int error_code,
                                  const CefString& error_string) override;
+
+  // CefDragHandler:
+  void OnDraggableRegionsChanged(
+      CefRefPtr<CefBrowser> browser,
+      CefRefPtr<CefFrame> frame,
+      const std::vector<CefDraggableRegion>& regions) override;
 
  private:
   std::list<CefRefPtr<CefBrowser>> browsers_;

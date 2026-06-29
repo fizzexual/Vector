@@ -2,9 +2,12 @@
 
 #include <windows.h>
 
+#include <fstream>
+#include <iterator>
 #include <string>
 
 #include "include/cef_browser.h"
+#include "include/cef_image.h"
 #include "include/views/cef_browser_view.h"
 #include "include/views/cef_window.h"
 #include "include/wrapper/cef_helpers.h"
@@ -12,34 +15,43 @@
 
 namespace {
 
-// Absolute file:// URL to the bundled UI (resources/app/index.html, copied
-// next to the executable at build time). Spaces are percent-encoded so the
-// URL is valid even under paths like "D:\New folder\...".
-std::string AppIndexUrl() {
+std::wstring ExeDir() {
   wchar_t buf[MAX_PATH] = {0};
   GetModuleFileNameW(nullptr, buf, MAX_PATH);
   std::wstring path(buf);
   size_t slash = path.find_last_of(L"\\/");
-  std::wstring dir = (slash == std::wstring::npos) ? L"." : path.substr(0, slash);
-  std::wstring file = dir + L"\\resources\\app\\index.html";
+  return (slash == std::wstring::npos) ? L"." : path.substr(0, slash);
+}
+
+// Absolute, space-safe file:// URL to the bundled UI.
+std::string AppIndexUrl() {
+  std::wstring file = ExeDir() + L"\\resources\\app\\index.html";
   for (auto& c : file) {
     if (c == L'\\') c = L'/';
   }
-  CefString cef_path(file);
-  std::string utf8 = cef_path.ToString();
-
+  std::string utf8 = CefString(file).ToString();
   std::string encoded;
   for (char c : utf8) {
-    if (c == ' ') {
-      encoded += "%20";
-    } else {
-      encoded += c;
-    }
+    if (c == ' ') encoded += "%20";
+    else encoded += c;
   }
   return "file:///" + encoded;
 }
 
-// Hosts the BrowserView inside a top-level window.
+CefRefPtr<CefImage> LoadAppIcon() {
+  std::wstring p = ExeDir() + L"\\resources\\app\\icon.png";
+  std::ifstream f(p.c_str(), std::ios::binary);
+  if (!f) return nullptr;
+  std::string data((std::istreambuf_iterator<char>(f)),
+                   std::istreambuf_iterator<char>());
+  if (data.empty()) return nullptr;
+  CefRefPtr<CefImage> image = CefImage::CreateImage();
+  image->AddPNG(1.0f, data.data(), data.size());
+  return image;
+}
+
+// Hosts the BrowserView inside a frameless top-level window. The in-app HTML
+// titlebar provides the window chrome (drag, min/max/close).
 class VectorWindowDelegate : public CefWindowDelegate {
  public:
   explicit VectorWindowDelegate(CefRefPtr<CefBrowserView> browser_view)
@@ -51,6 +63,7 @@ class VectorWindowDelegate : public CefWindowDelegate {
   void OnWindowCreated(CefRefPtr<CefWindow> window) override {
     window->AddChildView(browser_view_);
     window->SetTitle("Vector");
+    if (auto icon = LoadAppIcon()) window->SetWindowIcon(icon);
     window->CenterWindow(CefSize(1180, 760));
     window->Show();
     browser_view_->RequestFocus();
@@ -60,6 +73,11 @@ class VectorWindowDelegate : public CefWindowDelegate {
     browser_view_ = nullptr;
   }
 
+  bool IsFrameless(CefRefPtr<CefWindow> window) override { return true; }
+  bool CanResize(CefRefPtr<CefWindow> window) override { return true; }
+  bool CanMaximize(CefRefPtr<CefWindow> window) override { return true; }
+  bool CanMinimize(CefRefPtr<CefWindow> window) override { return true; }
+
   bool CanClose(CefRefPtr<CefWindow> window) override {
     CefRefPtr<CefBrowser> browser = browser_view_->GetBrowser();
     return browser ? browser->GetHost()->TryCloseBrowser() : true;
@@ -68,11 +86,9 @@ class VectorWindowDelegate : public CefWindowDelegate {
   CefSize GetPreferredSize(CefRefPtr<CefView> view) override {
     return CefSize(1180, 760);
   }
-
   CefSize GetMinimumSize(CefRefPtr<CefView> view) override {
     return CefSize(900, 560);
   }
-
   cef_show_state_t GetInitialShowState(CefRefPtr<CefWindow> window) override {
     return CEF_SHOW_STATE_NORMAL;
   }
