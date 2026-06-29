@@ -37,15 +37,15 @@ button { font-family: inherit; cursor: pointer; }
 .bg {
   position: fixed; inset: -80px; z-index: 0; pointer-events: none;
   display: grid; grid-template-columns: repeat(6, 1fr); grid-auto-rows: 1fr;
-  filter: blur(48px) saturate(1.25) brightness(0.8);
-  opacity: 0.32; transform: scale(1.05);
+  filter: blur(40px) saturate(1.35) brightness(0.95);
+  opacity: 0.5; transform: scale(1.06);
 }
 .bg img { width: 100%; height: 100%; object-fit: cover; }
 .bg-veil {
   position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background:
-    radial-gradient(120% 90% at 70% 0%, rgba(124,92,255,0.10), transparent 55%),
-    linear-gradient(180deg, rgba(8,9,12,0.86) 0%, rgba(8,9,12,0.74) 38%, rgba(24,15,9,0.92) 100%);
+    radial-gradient(120% 90% at 72% -10%, rgba(124,92,255,0.14), transparent 55%),
+    linear-gradient(180deg, rgba(9,10,14,0.62) 0%, rgba(9,10,14,0.55) 42%, rgba(28,17,10,0.9) 100%);
 }
 
 /* ---------- Title bar ---------- */
@@ -137,21 +137,21 @@ button { font-family: inherit; cursor: pointer; }
 /* ---------- Dashboard ---------- */
 .dashboard { flex: 1; overflow-y: auto; padding: 8px 26px 40px; }
 .promo {
-  position: relative;
-  background: rgba(20, 22, 30, 0.6); border: 0.5px solid var(--border);
-  border-radius: 14px; padding: 22px 24px; margin: 12px 0 26px;
-  backdrop-filter: blur(6px);
+  position: relative; text-align: center;
+  background: rgba(18, 20, 28, 0.5); border: 0.5px solid var(--border);
+  border-radius: 14px; padding: 26px 24px 24px; margin: 14px 0 28px;
+  backdrop-filter: blur(8px);
 }
 .promo-x {
   position: absolute; top: 12px; right: 12px; width: 26px; height: 26px;
   border: 0; border-radius: 7px; background: transparent; color: var(--text-3); font-size: 12px;
 }
 .promo-x:hover { background: rgba(255,255,255,0.08); color: var(--text); }
-.promo-title { font-size: 17px; font-weight: 600; max-width: 560px; margin-bottom: 16px; }
+.promo-title { font-size: 19px; font-weight: 600; max-width: 620px; margin: 2px auto 20px; line-height: 1.35; }
 .promo-points {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 10px 28px; margin-bottom: 18px; max-width: 760px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px 36px; margin: 0 auto 20px; max-width: 720px;
 }
-.promo-point { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-2); }
+.promo-point { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-2); text-align: left; }
 .promo-point .ic { color: var(--accent); width: 18px; text-align: center; }
 
 .section-head {
