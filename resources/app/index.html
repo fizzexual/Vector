@@ -7,11 +7,21 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <!-- Blurred cover-art collage behind everything -->
+  <div id="bg" class="bg"></div>
+  <div class="bg-veil"></div>
+
+  <!-- Title bar: nav arrows · add games · window controls -->
   <div class="titlebar">
-    <div class="brand">
-      <span class="brand-mark">▲</span>
+    <div class="tb-left">
+      <button class="icon-btn" id="btn-settings" title="Settings" aria-label="Settings">⚙</button>
+      <div class="avatar">V</div>
       <span class="brand-name">Vector</span>
+      <span class="tb-sep"></span>
+      <button class="nav-arrow" id="nav-back" title="Back" aria-label="Back">‹</button>
+      <button class="nav-arrow" id="nav-fwd" title="Forward" aria-label="Forward">›</button>
     </div>
+    <button class="add-btn" id="btn-add-top"><span class="ic">＋</span> Add games</button>
     <div class="win-controls">
       <button class="win-btn" data-win="minimize" title="Minimize" aria-label="Minimize">&#xE921;</button>
       <button class="win-btn" data-win="maximize" title="Maximize" aria-label="Maximize">&#xE922;</button>
@@ -21,16 +31,16 @@
 
   <div class="app-body">
     <aside class="sidebar">
+      <div class="nav-group-label first">Games</div>
       <nav class="nav">
-        <button class="nav-item active" data-view="all"><span class="ic">▦</span> Library</button>
-        <button class="nav-item" data-view="recent"><span class="ic">◷</span> Recent</button>
+        <button class="nav-item active" data-view="recent"><span class="ic">▤</span> Recent</button>
+        <button class="nav-item" data-view="all"><span class="ic">▦</span> All games <span class="count" data-count="all">0</span></button>
+        <button class="nav-item" data-view="installed"><span class="ic">▼</span> Installed <span class="count" data-count="installed">0</span></button>
         <button class="nav-item" data-view="favorites"><span class="ic">♥</span> Favorites</button>
-        <button class="nav-item" data-view="installed"><span class="ic">▼</span> Installed</button>
       </nav>
 
       <div class="nav-group-label">Platforms</div>
       <nav class="nav">
-        <button class="nav-item plat active" data-source="all"><span class="dot dot-all"></span> All stores <span class="count" data-count="all">0</span></button>
         <button class="nav-item plat" data-source="steam"><span class="dot dot-steam"></span> Steam <span class="count" data-count="steam">0</span></button>
         <button class="nav-item plat" data-source="epic"><span class="dot dot-epic"></span> Epic <span class="count" data-count="epic">0</span></button>
         <button class="nav-item plat" data-source="gog"><span class="dot dot-gog"></span> GOG <span class="count" data-count="gog">0</span></button>
@@ -40,27 +50,61 @@
       <div class="sidebar-footer">
         <button class="nav-item" id="btn-stores"><span class="ic">⇄</span> Connect stores</button>
         <button class="nav-item" id="btn-add"><span class="ic">＋</span> Add a game</button>
-        <button class="nav-item" id="btn-settings"><span class="ic">⚙</span> Settings</button>
       </div>
     </aside>
 
     <main class="main">
-      <div class="topbar">
-        <label class="search">
-          <span class="search-ic">⌕</span>
-          <input id="search" type="text" placeholder="Search your library" autocomplete="off" spellcheck="false" />
-        </label>
-        <div class="sort">
-          <select id="sort" aria-label="Sort">
-            <option value="recent">Recently played</option>
-            <option value="name">Name (A–Z)</option>
-            <option value="size">Size on disk</option>
-          </select>
+      <!-- ===== Recent dashboard ===== -->
+      <div id="dashboard" class="dashboard">
+        <div class="promo" id="promo">
+          <button class="promo-x" id="promo-x" aria-label="Dismiss">✕</button>
+          <div class="promo-title">Bring all your games together by connecting your stores.</div>
+          <div class="promo-points">
+            <div class="promo-point"><span class="ic">▤</span> Organise and launch everything from one library.</div>
+            <div class="promo-point"><span class="ic">⟳</span> Auto-detect games from Steam, Epic, and GOG.</div>
+            <div class="promo-point"><span class="ic">▶</span> Launch any game with a single click.</div>
+            <div class="promo-point"><span class="ic">◆</span> Your data stays local on your PC.</div>
+          </div>
+          <button class="btn-primary" id="promo-connect">Connect stores</button>
         </div>
-        <button id="btn-rescan" class="btn-rescan"><span class="ic">⟳</span> Rescan</button>
+
+        <div class="section-head">
+          <h2>Recently played</h2>
+          <div class="carousel-nav">
+            <button id="rp-prev" aria-label="Scroll left">‹</button>
+            <button id="rp-next" aria-label="Scroll right">›</button>
+          </div>
+        </div>
+        <div class="carousel" id="recent-carousel"></div>
+
+        <div class="section-head"><h2>Your library at a glance</h2></div>
+        <div class="summary" id="summary"></div>
+
+        <div class="section-head"><h2>Recently added</h2></div>
+        <div class="table-wrap">
+          <table class="recent-table">
+            <thead><tr><th>Game</th><th>Last played</th><th>Size</th><th>Source</th></tr></thead>
+            <tbody id="recent-rows"></tbody>
+          </table>
+        </div>
       </div>
 
-      <div class="content">
+      <!-- ===== Library (grid) ===== -->
+      <div id="library" class="library hidden">
+        <div class="topbar">
+          <label class="search">
+            <span class="search-ic">⌕</span>
+            <input id="search" type="text" placeholder="Search your library" autocomplete="off" spellcheck="false" />
+          </label>
+          <div class="sort">
+            <select id="sort" aria-label="Sort">
+              <option value="recent">Recently played</option>
+              <option value="name">Name (A–Z)</option>
+              <option value="size">Size on disk</option>
+            </select>
+          </div>
+          <button id="btn-rescan" class="btn-rescan"><span class="ic">⟳</span> Rescan</button>
+        </div>
         <div class="content-head">
           <h1 id="view-title">All games</h1>
           <span id="view-count" class="muted">0 games</span>
