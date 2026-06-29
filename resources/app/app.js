@@ -226,30 +226,41 @@
     $("#recent-rows").innerHTML = added.map(tableRow).join("");
   }
 
+  var SRCS = ["steam", "epic", "gog", "manual"];
+
   function renderSummary(active) {
+    var byCount = { steam: 0, epic: 0, gog: 0, manual: 0 };
+    var byInst = { steam: 0, epic: 0, gog: 0, manual: 0 };
+    var bySize = { steam: 0, epic: 0, gog: 0, manual: 0 };
+    active.forEach(function (g) {
+      if (byCount[g.source] == null) return;
+      byCount[g.source]++;
+      if (g.installed) byInst[g.source]++;
+      bySize[g.source] += (g.sizeBytes || 0);
+    });
     var total = active.length;
     var installed = active.filter(function (g) { return g.installed; }).length;
     var sizeBytes = active.reduce(function (s, g) { return s + (g.sizeBytes || 0); }, 0);
-    var bySrc = { steam: 0, epic: 0, gog: 0, manual: 0 };
-    active.forEach(function (g) { if (bySrc[g.source] != null) bySrc[g.source]++; });
-    var connected = ["steam", "epic", "gog", "manual"].filter(function (k) { return bySrc[k] > 0; }).length;
-    var maxc = Math.max(1, bySrc.steam, bySrc.epic, bySrc.gog, bySrc.manual);
-    var bars = ["steam", "epic", "gog", "manual"].map(function (k) {
-      return '<div class="bar" title="' + esc(PLAT[k].label) + ': ' + bySrc[k] +
-        '" style="height:' + Math.round((bySrc[k] / maxc) * 100) + '%;background:var(--' + k + ')"></div>';
-    }).join("");
     var sizeGb = sizeBytes ? (sizeBytes / 1e9 >= 100 ? Math.round(sizeBytes / 1e9) : (sizeBytes / 1e9).toFixed(1)) : 0;
+
     $("#summary").innerHTML =
-      metric("Games in library", total, "accent") +
-      metric("Installed", installed, "") +
-      metric("Library size", sizeGb + " GB", "amber") +
-      '<div class="metric"><div class="metric-label">By platform · ' + connected + ' connected</div>' +
-      '<div class="metric-bars">' + bars + '</div></div>';
+      sumCol("accent", total, "games in library", sumBars(byCount, "#8f7bff")) +
+      sumCol("green", installed, installed === 1 ? "game installed" : "games installed", sumBars(byInst, "#6fcf6f")) +
+      sumCol("amber", sizeGb + " GB", "on disk", sumBars(bySize, "#e0a040"));
   }
 
-  function metric(label, value, cls) {
-    return '<div class="metric"><div class="metric-label">' + esc(label) + '</div>' +
-      '<div class="metric-value ' + cls + '">' + esc(String(value)) + '</div></div>';
+  function sumBars(map, color) {
+    var max = Math.max(1, map.steam, map.epic, map.gog, map.manual);
+    return '<div class="sum-bars">' + SRCS.map(function (k) {
+      return '<div class="sum-bar-col" title="' + esc(PLAT[k].label) + '">' +
+        '<div class="sum-bar" style="height:' + Math.round((map[k] / max) * 100) + '%;background:' + color + '"></div>' +
+        '<span class="dot dot-' + k + '"></span></div>';
+    }).join("") + '</div>';
+  }
+
+  function sumCol(cls, value, label, barsHtml) {
+    return '<div class="sum-col"><div class="sum-value ' + cls + '">' + esc(String(value)) + '</div>' +
+      '<div class="sum-label">' + esc(label) + '</div>' + barsHtml + '</div>';
   }
 
   function tableRow(g) {
@@ -474,6 +485,9 @@
     });
     $$(".nav-item[data-source]").forEach(function (el) {
       el.addEventListener("click", function () { goSource(el.getAttribute("data-source")); });
+    });
+    $$(".nav-item[data-soon]").forEach(function (el) {
+      el.addEventListener("click", function () { toast(el.getAttribute("data-soon") + " are coming soon"); });
     });
 
     $("#btn-add").addEventListener("click", openAdd);

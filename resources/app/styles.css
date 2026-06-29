@@ -59,9 +59,9 @@ button { font-family: inherit; cursor: pointer; }
 .tb-left { display: flex; align-items: center; gap: 8px; -webkit-app-region: no-drag; }
 .avatar {
   width: 26px; height: 26px; border-radius: 50%;
-  background: var(--accent); color: #fff;
+  background: #f5a623; color: #3a2400;
   display: flex; align-items: center; justify-content: center;
-  font-weight: 600; font-size: 13px;
+  font-weight: 700; font-size: 13px;
 }
 .brand-name { font-weight: 600; letter-spacing: 0.02em; font-size: 14px; }
 .tb-sep { width: 1px; height: 20px; background: var(--border-strong); margin: 0 4px; }
@@ -113,6 +113,8 @@ button { font-family: inherit; cursor: pointer; }
 }
 .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
 .nav-item.active { background: var(--accent-soft); color: #cdbcff; }
+.nav-item.soon { opacity: 0.6; }
+.nav-item.soon:hover { opacity: 1; }
 .nav-item .ic { width: 16px; text-align: center; font-size: 13px; opacity: 0.9; }
 .nav-item .count { margin-left: auto; color: var(--text-3); font-size: 12px; }
 .nav-group-label {
@@ -172,19 +174,21 @@ button { font-family: inherit; cursor: pointer; }
 .carousel .card { flex: 0 0 144px; }
 .carousel-empty { color: var(--text-3); font-size: 13px; padding: 18px 2px; }
 
-/* summary */
-.summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-.metric {
-  background: rgba(22, 24, 32, 0.62); border: 0.5px solid var(--border);
-  border-radius: 12px; padding: 16px 18px; backdrop-filter: blur(6px);
+/* summary — 3 columns with bar charts (GOG style) */
+.summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.sum-col {
+  background: rgba(20, 22, 30, 0.55); border: 0.5px solid var(--border);
+  border-radius: 12px; padding: 18px 20px; backdrop-filter: blur(6px);
 }
-.metric-label { font-size: 12.5px; color: var(--text-2); }
-.metric-value { font-size: 26px; font-weight: 600; margin-top: 6px; }
-.metric-value.accent { color: #b9a6ff; }
-.metric-value.amber { color: var(--amber); }
-.metric-value.green { color: var(--green); }
-.metric-bars { display: flex; gap: 5px; align-items: flex-end; height: 30px; margin-top: 10px; }
-.metric-bars .bar { flex: 1; background: var(--accent); border-radius: 3px 3px 0 0; min-height: 4px; opacity: 0.9; }
+.sum-value { font-size: 22px; font-weight: 600; }
+.sum-value.accent { color: #b39bff; }
+.sum-value.green { color: #7fd98c; }
+.sum-value.amber { color: #f0b463; }
+.sum-label { font-size: 12.5px; color: var(--text-2); margin-top: 2px; }
+.sum-bars { display: flex; align-items: flex-end; gap: 14px; height: 60px; margin-top: 18px; }
+.sum-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 7px; height: 100%; justify-content: flex-end; }
+.sum-bar { width: 100%; max-width: 26px; border-radius: 4px 4px 0 0; min-height: 4px; }
+.sum-bar-col .dot { width: 7px; height: 7px; flex: 0 0 7px; }
 
 /* recently added table */
 .table-wrap {
