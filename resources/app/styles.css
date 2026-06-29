@@ -342,3 +342,55 @@ button { font-family: inherit; cursor: pointer; }
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 6px; border: 2px solid transparent; background-clip: content-box; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.18); background-clip: content-box; }
+
+/* ---------- Connect stores ---------- */
+.stores-card {
+  position: relative; z-index: 1;
+  width: min(540px, 94vw);
+  background: var(--panel); border: 0.5px solid var(--border);
+  border-radius: 14px; padding: 24px;
+  box-shadow: 0 30px 70px rgba(0,0,0,0.6);
+}
+.stores-card h2 { margin: 0 0 4px; font-size: 19px; }
+.stores-card > .muted { margin: 0 0 14px; font-size: 13px; }
+.stores-list { display: flex; flex-direction: column; }
+.store-row {
+  display: flex; align-items: center; gap: 13px;
+  padding: 13px 2px; border-bottom: 0.5px solid var(--border);
+}
+.store-row:last-child { border-bottom: 0; }
+.store-row.soon { opacity: 0.5; }
+.store-logo {
+  width: 42px; height: 42px; flex: 0 0 42px; border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 600; font-size: 15px;
+}
+.store-info { flex: 1; min-width: 0; }
+.store-name { font-size: 14px; font-weight: 500; }
+.store-status { font-size: 12px; color: var(--text-2); margin-top: 2px; }
+.store-path {
+  font-size: 11px; color: var(--text-3); margin-top: 3px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.store-right { flex: 0 0 auto; display: flex; align-items: center; }
+.store-status-muted { font-size: 12px; color: var(--text-3); }
+.badge-soon {
+  font-size: 11px; color: #cdbcff; background: var(--accent-soft);
+  padding: 4px 11px; border-radius: 20px;
+}
+.switch {
+  position: relative; width: 42px; height: 23px; border-radius: 999px;
+  background: #3a3d48; border: 0; cursor: pointer; padding: 0;
+  transition: background 0.15s; flex: 0 0 42px;
+}
+.switch.on { background: var(--accent); }
+.switch-knob {
+  position: absolute; top: 3px; left: 3px;
+  width: 17px; height: 17px; border-radius: 50%; background: #fff;
+  transition: left 0.15s;
+}
+.switch.on .switch-knob { left: 22px; }
+.stores-foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  margin-top: 16px; padding-top: 16px; border-top: 0.5px solid var(--border);
+}

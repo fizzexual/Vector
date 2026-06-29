@@ -60,6 +60,18 @@
     switch (p.cmd) {
       case "getSettings":
         return delay({ scanOnLaunch: true, stores: { steam: true, epic: true, gog: true }, defaultSort: "recent" });
+      case "setSettings":
+        return delay({ ok: true });
+      case "getStores":
+        return delay([
+          { id: "steam", installed: true, path: "C:/Program Files (x86)/Steam", count: 9, enabled: true },
+          { id: "epic", installed: true, path: "C:/ProgramData/Epic/EpicGamesLauncher", count: 2, enabled: true },
+          { id: "gog", installed: false, path: "", count: 0, enabled: true },
+          { id: "xbox", installed: false, comingSoon: true, count: 0, enabled: false },
+          { id: "ea", installed: false, comingSoon: true, count: 0, enabled: false },
+          { id: "ubisoft", installed: false, comingSoon: true, count: 0, enabled: false },
+          { id: "battlenet", installed: false, comingSoon: true, count: 0, enabled: false }
+        ], 300);
       case "getLibrary":
         return delay(overlay(games));
       case "scan":

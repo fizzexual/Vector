@@ -38,6 +38,7 @@
       </nav>
 
       <div class="sidebar-footer">
+        <button class="nav-item" id="btn-stores"><span class="ic">⇄</span> Connect stores</button>
         <button class="nav-item" id="btn-add"><span class="ic">＋</span> Add a game</button>
         <button class="nav-item" id="btn-settings"><span class="ic">⚙</span> Settings</button>
       </div>
@@ -124,6 +125,24 @@
       <div class="add-actions">
         <button class="btn-ghost" data-close="addmodal">Cancel</button>
         <button class="btn-primary" id="add-submit">Add game</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Connect stores -->
+  <div class="modal" id="stores">
+    <div class="modal-backdrop" data-close="stores"></div>
+    <div class="stores-card">
+      <button class="modal-x" data-close="stores" aria-label="Close">✕</button>
+      <h2>Connect stores</h2>
+      <p class="muted">Vector finds games from the launchers installed on your PC. Turn a store on or off to include it in your library.</p>
+      <div id="stores-list" class="stores-list"></div>
+      <div class="stores-foot">
+        <div>
+          <div class="store-name">Scan on launch</div>
+          <div class="store-status">Refresh your library automatically when Vector opens</div>
+        </div>
+        <button class="switch on" id="stores-scan-toggle" role="switch" aria-label="Scan on launch"><span class="switch-knob"></span></button>
       </div>
     </div>
   </div>

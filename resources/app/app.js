@@ -277,7 +277,24 @@
     $("#btn-rescan").addEventListener("click", function () { rescan(false); });
     $("#empty-rescan").addEventListener("click", function () { rescan(false); });
     $("#btn-add").addEventListener("click", openAdd);
+    $("#btn-stores").addEventListener("click", openStores);
     $("#btn-settings").addEventListener("click", function () { toast("Settings coming soon"); });
+
+    var storesList = $("#stores-list");
+    if (storesList) {
+      storesList.addEventListener("click", function (e) {
+        var sw = e.target.closest(".switch[data-store]");
+        if (sw) toggleStore(sw.getAttribute("data-store"), !sw.classList.contains("on"));
+      });
+    }
+    var scanToggle = $("#stores-scan-toggle");
+    if (scanToggle) {
+      scanToggle.addEventListener("click", function () {
+        var on = !scanToggle.classList.contains("on");
+        scanToggle.classList.toggle("on", on);
+        vector.setSettings({ scanOnLaunch: on }).catch(function () {});
+      });
+    }
 
     $$(".nav-item[data-view]").forEach(function (el) {
       el.addEventListener("click", function () { FILTER.view = el.getAttribute("data-view"); setActiveNav(); render(); });
@@ -339,6 +356,69 @@
   function guessName(path) {
     var base = String(path).replace(/\\/g, "/").split("/").pop() || "";
     return base.replace(/\.[^.]+$/, "");
+  }
+
+  // ---- connect stores (integrations) ----
+  var STORE_META = {
+    steam: { name: "Steam", color: "#1b2838", letter: "S" },
+    epic: { name: "Epic Games", color: "#2f2f2f", letter: "E" },
+    gog: { name: "GOG", color: "#7b3fe4", letter: "G" },
+    xbox: { name: "Xbox", color: "#107c10", letter: "X" },
+    ea: { name: "EA app", color: "#d83c3c", letter: "EA" },
+    ubisoft: { name: "Ubisoft Connect", color: "#1f7bd6", letter: "U" },
+    battlenet: { name: "Battle.net", color: "#1486d6", letter: "B" }
+  };
+
+  function openStores() { openModal("stores"); renderStores(); }
+
+  function renderStores() {
+    var list = $("#stores-list");
+    list.innerHTML = '<div class="muted" style="padding:14px 2px;">Checking your launchers…</div>';
+    vector.getStores().then(function (stores) {
+      list.innerHTML = (stores || []).map(storeRow).join("");
+    }).catch(function () {
+      list.innerHTML = '<div class="muted" style="padding:14px 2px;">Couldn\'t read your stores.</div>';
+    });
+    vector.getSettings().then(function (s) {
+      var t = $("#stores-scan-toggle");
+      if (t) t.classList.toggle("on", !!(s && s.scanOnLaunch));
+    }).catch(function () {});
+  }
+
+  function storeRow(s) {
+    var m = STORE_META[s.id] || { name: s.id, color: "#444", letter: "?" };
+    var statusText, right;
+    if (s.comingSoon) {
+      statusText = "Coming soon";
+      right = '<span class="badge-soon">Soon</span>';
+    } else if (!s.installed) {
+      statusText = "Not installed";
+      right = '<span class="store-status-muted">Not found</span>';
+    } else {
+      var n = s.count || 0;
+      statusText = (s.enabled ? "Connected" : "Off") + " · " + n + " game" + (n === 1 ? "" : "s");
+      right = '<button class="switch' + (s.enabled ? " on" : "") + '" data-store="' + esc(s.id) +
+        '" role="switch" aria-checked="' + (s.enabled ? "true" : "false") + '"><span class="switch-knob"></span></button>';
+    }
+    var path = (s.installed && s.path) ? '<div class="store-path">' + esc(s.path) + '</div>' : '';
+    return '<div class="store-row' + (s.comingSoon ? ' soon' : '') + '">' +
+      '<div class="store-logo" style="background:' + m.color + '">' + esc(m.letter) + '</div>' +
+      '<div class="store-info"><div class="store-name">' + esc(m.name) + '</div>' +
+      '<div class="store-status">' + esc(statusText) + '</div>' + path + '</div>' +
+      '<div class="store-right">' + right + '</div></div>';
+  }
+
+  function toggleStore(id, enable) {
+    var patch = { stores: {} };
+    patch.stores[id] = enable;
+    var name = STORE_META[id] ? STORE_META[id].name : id;
+    vector.setSettings(patch).then(function () {
+      renderStores();
+      toast((enable ? "Connected " : "Disconnected ") + name);
+      return vector.scan();
+    }).then(function (lib) {
+      if (lib) { LIB = lib; render(); }
+    }).catch(function () {});
   }
 
   document.addEventListener("DOMContentLoaded", boot);

@@ -34,6 +34,7 @@
     getLibrary: function () { return call({ cmd: "getLibrary" }); },
     getSettings: function () { return call({ cmd: "getSettings" }); },
     setSettings: function (patch) { return call({ cmd: "setSettings", patch: patch }); },
+    getStores: function () { return call({ cmd: "getStores" }); },
     launch: function (uid) { return call({ cmd: "launch", uid: uid }); },
     showInFolder: function (uid) { return call({ cmd: "showInFolder", uid: uid }); },
     setFavorite: function (uid, value) { return call({ cmd: "setFavorite", uid: uid, value: value }); },

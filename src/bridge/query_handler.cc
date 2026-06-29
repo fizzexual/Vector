@@ -78,6 +78,46 @@ bool VectorQueryHandler::OnQuery(CefRefPtr<CefBrowser> browser,
     vector_core::ScanEnv env = vector_core::make_system_scan_env();
     store_.update_cache(vector_core::scan_all(env, store_.scan_options()));
     callback->Success(store_.library_json().dump());
+  } else if (cmd == "getStores") {
+    vector_core::ScanEnv env = vector_core::make_system_scan_env();
+    vector_core::ScanOptions opts = store_.scan_options();
+    nlohmann::json lib = store_.library_json();
+    auto count_src = [&lib](const char* src) {
+      int n = 0;
+      for (const auto& g : lib)
+        if (g.value("source", std::string()) == src) n++;
+      return n;
+    };
+
+    nlohmann::json arr = nlohmann::json::array();
+
+    auto steam_path = env.reg_value("HKCU", "Software\\Valve\\Steam", "SteamPath");
+    if (!steam_path || steam_path->empty())
+      steam_path = env.reg_value("HKLM", "SOFTWARE\\WOW6432Node\\Valve\\Steam",
+                                 "InstallPath");
+    bool steam_ok = steam_path && !steam_path->empty();
+    arr.push_back({{"id", "steam"}, {"installed", steam_ok},
+                   {"path", steam_ok ? *steam_path : std::string()},
+                   {"count", count_src("steam")}, {"enabled", opts.steam}});
+
+    std::string epic_dir =
+        env.program_data + "/Epic/EpicGamesLauncher/Data/Manifests";
+    bool epic_ok = env.exists && env.exists(epic_dir);
+    arr.push_back({{"id", "epic"}, {"installed", epic_ok},
+                   {"path", epic_ok ? epic_dir : std::string()},
+                   {"count", count_src("epic")}, {"enabled", opts.epic}});
+
+    bool gog_ok =
+        env.reg_subkeys &&
+        !env.reg_subkeys("HKLM", "SOFTWARE\\WOW6432Node\\GOG.com\\Games").empty();
+    arr.push_back({{"id", "gog"}, {"installed", gog_ok}, {"path", std::string()},
+                   {"count", count_src("gog")}, {"enabled", opts.gog}});
+
+    for (const char* id : {"xbox", "ea", "ubisoft", "battlenet"})
+      arr.push_back({{"id", id}, {"installed", false}, {"comingSoon", true},
+                     {"count", 0}, {"enabled", false}});
+
+    callback->Success(arr.dump());
   } else if (cmd == "launch") {
     auto game = store_.find(j.value("uid", std::string()));
     if (game && vector_core::launch_game(*game)) {
