@@ -1,8 +1,15 @@
-# Vector
+# Vector 🍂
 
 A native Windows desktop game launcher in the spirit of Steam and GOG Galaxy, built on the **Chromium Embedded Framework (CEF)** — the same class of technology Steam's own client uses.
 
 Vector automatically detects the games already installed on your PC across **Steam, Epic Games, and GOG**, presents them in a polished dark cover-art library, and launches them directly.
+
+## About
+
+Vector is for Windows PC gamers who keep games in several stores and want one library to browse
+and start them from. It is a C++20 host around CEF with a plain HTML/CSS/JS interface, and reads
+each store's registry entries and install manifests to find games. It is in early, active
+development (a handful of commits); there is no packaged release yet.
 
 ## Highlights
 
