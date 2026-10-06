@@ -1,0 +1,2 @@
+Third-party code in `src/third_party/` (doctest, nlohmann/json) keeps its own
+license, stated at the top of each file.
